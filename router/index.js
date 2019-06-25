@@ -3,6 +3,7 @@ const router = new Router();
 
 const productsCtrl = require('../controllers/products.js');
 const skillsCtrl = require('../controllers/skills.js');
+const msgCtrl = require('../controllers/msg.js');
 
 router.get('/', async (ctx) => {
   try {
@@ -22,15 +23,27 @@ router.get('/', async (ctx) => {
 
 router.post('/', async (ctx) => {
   try {
-    console.log(ctx.request.body);
-    ctx.redirect('/')
-    // const { name, email, message } = ctx.request.body;
-    // console.log(`Имя пользоватеья: ${name}, Емейл: ${email}, Сообщение: ${message}`);
-    
+    const products = await productsCtrl.get();
+    const skills = await skillsCtrl.get();
+    const msg = await msgCtrl.add({ ...ctx.request.body });
+
+    console.log(msg);
+
+    ctx.render('', {
+      msgsemail: msg,
+      products,
+      skills
+    });
 
   } catch (err) {
-    console.error('err', err);
-    ctx.status = 404;
+    const products = await productsCtrl.get();
+    const skills = await skillsCtrl.get();
+    
+    ctx.render('', {
+      msgsemail: err,
+      products,
+      skills
+    })
   }
 });
 
